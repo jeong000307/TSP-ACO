@@ -25,6 +25,10 @@
         "random": "cpp",
         "type_traits": "cpp",
         "cmath": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "algorithm": "cpp",
+        "hashtable": "cpp",
+        "system_error": "cpp",
+        "complex": "cpp"
     }
 }

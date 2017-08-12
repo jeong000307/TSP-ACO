@@ -1,105 +1,140 @@
 #include "tsp.hpp"
 
-int max_pheromone = 0;
-int flag = 0;
-
 int main()  {
-    int NodeNumber, EdgeNumber;
-    double Temp = 0;
-    double Phi = 0;
-    int From = 0, To = 0;
-    int Old_From = 1;
-    double Value = 0;
+    cin >> NumberOfNode >> NumberOfEdge;
 
-    cin >> NodeNumber >> EdgeNumber;
-
-    AntMap[1] = 10000;
-
-    for(int i = 1; i <= EdgeNumber; ++i)   {
+    for(int i = 1; i <= NumberOfEdge; ++i)  {
         cin >> From >> To >> Value;
-        Graph[From].push_back({To, Value, 1});
-        Graph[To].push_back({From, Value, 1});
+        Graph[From][To] = {Value, 10};
+        Graph[From][From].Distance = 0;
+        Graph[To][From] = {Value, 10};
     }
 
-    for(int k = 1; k <= NodeNumber; ++k)   {
-        Old_From = From;
-        for(int i = 1; i <= 100; ++i)    {
-            r = GetRandomNumber();
-            Max_arg = make_pair(0, 0);
-            if(r <= r0) {
-                for(auto j : Graph[From]) {
-                    if(j.Destination != Old_From)   {
-                        Temp = j.Pheromone * pow(1 / j.Distance, Beta);
-                        if(Max_arg.second < Temp)
-                            Max_arg.first = j.Destination;
-                            Max_arg.second = Temp;
-                    }
-                }
-            }
-            else    {
-                for(auto j : Graph[From]) {
-                    Temp += j.Pheromone * pow(1 / j.Distance, Beta);
-                }
-                for(auto j : Graph[From]) {
-                    if(j.Destination != Old_From)   {
-                        Phi = j.Pheromone * pow(1 / j.Distance, Beta);
-                        Phi /= Temp;
-                        if(Max_arg.second < Phi)   {
-                            Max_arg.first = j.Destination;
-                            Max_arg.second = Phi;
-                        }
-                    }
-                }
-            }
-
-            if(!Max_arg.first)
-                break;
-            Graph[From][Max_arg.first].Pheromone = (1 - Rho2) * Graph[From][Max_arg.first].Pheromone + Rho2 * Tau0;
-            Old_From = From;
-            From = Max_arg.first;
-            cout << From << " ";
+    for(int Time = 1; Time <= 5; ++Time)   {
+        for(int i = 1; i <= ANTS; ++i)   {
+            Ant[i].Index.clear();
+            Ant[i].Length = 0;
         }
-        cout << "\n";
+
+        for(int i = 1; i <= ANTS; ++i)   {
+            Tour(i);
+            if(Ant[i].Length == -1)
+                continue;
+            
+            if(MinLength > Ant[i].Length)   {
+                BestPath.clear();
+                for(auto j : Ant[i].Index)  {
+                    BestPath.push_back(j);
+                }
+
+                MinLength = Ant[i].Length;
+            }
+        }
+
+        Evaporate();
+
+        for (int i = 1; i <= ANTS; ++i) {
+			if (Ant[i].Length == -1)
+				continue;
+
+			for (int j = 0; j < Ant[i].Index.size() - 1; j++) {
+				From = Ant[i].Index[j];
+                To = Ant[i].Index[j + 1];
+				Graph[From][To].Pheromone += 1.0 / Ant[i].Length;
+                Graph[To][From].Pheromone += 1.0 / Ant[i].Length;
+			}
+		}
     }
 
-    cout << "\n" << "temp : "; 
-    search(1);
-
-    cout << "\n" << "search : " << " ";
-    for(auto i : searchMap)
+    for(auto i : BestPath)  {
         cout << i << " ";
-    cout << "\n";
+    }
+    cout << "\n" << MinLength;
 }
 
-double GetRandomNumber()    {
+void Tour(int i) {
+    memset(Visited, 0, sizeof(Visited));
+    Old_From = GetRandomInt();
+    From = Old_From;
+    Visited[From] = true;
+
+    for(int j = 1; j < NumberOfNode; ++j)    {
+        Ant[i].Index.push_back(From);
+        To = SelectNext(From);
+        if(To == -1)    {
+            Ant[i].Index.clear();
+            Ant[i].Length = -1;
+            return ;
+        }
+        Visited[To] = true;
+        Ant[i].Length += Graph[From][To].Distance;
+        From = To;
+    }
+
+    Ant[i].Length += Graph[To][Old_From].Distance;
+    Ant[i].Index.push_back(From);
+
+    return ;
+}
+
+int SelectNext(int i)   {
+    int Low, High, Middle;
+    double sum = 0, r = 0;
+    vector<pair<int, double>> Probability;
+    for(int j = 1; j <= NumberOfNode; ++j)   {
+        if(Visited[j] || i == j)
+            continue;
+
+        sum += (double)pow(Graph[i][j].Pheromone, Alpha) * (double)pow(1.0 / Graph[i][j].Distance, Beta);
+    }
+    for(int j = 1; j <= NumberOfNode; ++j)  {
+        if(Visited[j] || i == j)
+            continue;
+        
+        Probability.push_back(make_pair(j, (double)pow(Graph[i][j].Pheromone, Alpha) * (double)pow(1.0 / Graph[i][j].Distance, Beta) / sum));
+    }
+
+    if(Probability.empty()) {
+        return -1;
+    }
+
+    Low = 0, High = Probability.size() - 1;
+
+    r = GetRandomReal();
+
+    while(Low < High)   {
+        Middle = (Low + High) / 2;
+        if(Probability[Middle].second <= r)
+            High = Middle;
+        else
+            Low = Middle + 1;
+    }
+
+    return Probability[Low].first;
+}
+
+void Evaporate()    {
+    for(int i = 1; i <= NumberOfNode; ++i)   {
+        for(int j = 1; j <= NumberOfNode; ++j) {
+            Graph[i][j].Pheromone *= Rho;
+        }
+    }
+}
+
+double GetRandomReal()    {
     random_device rn;
     mt19937_64 rnd(rn());
  
-    uniform_int_distribution<double> range(0, 1);
+    uniform_real_distribution<double> range(0, 1);
 
     return range(rnd);
 }
 
-void search(int start)  {
-    ++visited[start];
-    Max_arg = make_pair(0, 0);
-    if(start == 1)
-        ++flag;
-    if(flag == 2)
-        return ;
-    for(auto i : Graph[start])  {
-        if(!visited[i.Destination]) {
-            if(i.Pheromone > Max_arg.second)    {
-                Max_arg.first = i.Destination;
-                Max_arg.second = i.Pheromone;
-            }
-        }
-        cout << i.Destination << " ";
-    }
-    cout << "\n";
+int GetRandomInt()    {
+    random_device rn;
+    mt19937_64 rnd(rn());
+ 
+    uniform_int_distribution<int> range(1, NumberOfNode);
 
-    if(!Max_arg.first)
-        return ;
-    searchMap.push_back(Max_arg.first);
-    search(Max_arg.first);
+    return range(rnd);
 }
