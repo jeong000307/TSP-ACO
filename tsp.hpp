@@ -3,38 +3,50 @@
 #include <vector>
 #include <memory>
 #include <random>
+#include <set>
 
-#define ANTS 10000
-#define NODE 100
+#define NODE 1000
+#define INF 10000000
 
 using namespace std;
 
 struct Edge {
     int Distance = 0;
     double Pheromone = 0;
+    double Tau0 = 0;
 	Edge() {}
 	Edge(int Distance, double Pheromone) : Distance(Distance), Pheromone(Pheromone) {}
 };
 
 struct AntStruct {
-    bool Visited[ANTS + 1] = {false, };
     vector<int> Index;
     int Length = 0;
 };
 
-Edge Graph[NODE + 1][NODE + 1];
-vector<int> BestPath;
-AntStruct Ant[ANTS + 1];
-bool Visited[NODE + 1] = {0, };
+struct IterationStruct  {
+    int Value;
+    int Cycle;
+};
 
-int NumberOfNode, NumberOfEdge;
+struct Edge Graph[NODE + 1][NODE + 1];
+vector<int> BestPath;
+vector<int> TSP;
+AntStruct Ant[10001];
+bool Visited[NODE + 1] = {0, };
+IterationStruct Iteration = {INT32_MAX, 0};
+
+int Ants;
+int NumberOfNode;
 int From, To, Old_From, Value;
 
-double MinLength = INT32_MAX;
+int TSPLength = 0;
 
-double Alpha = 1.5;
-double Beta = 1.5;
-double Rho = 0.75;
+double Alpha = 0.1;
+double Beta = 2;
+double Rho = 0.1;
+double Q0 = 0.85;
+double Tau = 0;
+double Phi = 0.1;
 
 int GetRandomInt();
 double GetRandomReal();
