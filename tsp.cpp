@@ -12,7 +12,7 @@ int main()  {
             if(!Value)
                 Graph[i][j].Pheromone = -1;
 
-            Graph[i][j].Pheromone = 1.0 / Graph[i][j].Distance;
+            Graph[i][j].Pheromone = 1.0 / (NumberOfNode * Graph[i][j].Distance);
             Graph[i][j].Tau0 = 1.0 / (NumberOfNode * Graph[i][j].Distance);
         }
     }
@@ -54,20 +54,20 @@ int main()  {
 			}
         }
 
-        if(Iteration.Cycle > 5)   {
-            Alpha *= pow(0.5, 1);
-            Rho *= pow(0.5, 1);
-        }
+        // if(Iteration.Cycle > 5)   {
+        //     Alpha *= pow(0.5, 1);
+        //     Rho *= pow(0.5, 1);
+        // }
 
-        if(Iteration.Cycle > 50)   {
-            Alpha *= pow(0.5, 2);
-            Rho *= pow(0.5, 2);
-        }
+        // if(Iteration.Cycle > 50)   {
+        //     Alpha *= pow(0.5, 2);
+        //     Rho *= pow(0.5, 2);
+        // }
         
-        if(Iteration.Cycle > 100)   {
-            Alpha *= pow(0.5, 3);
-            Rho *= pow(0.5, 3);
-        }
+        // if(Iteration.Cycle > 100)   {
+        //     Alpha *= pow(0.5, 3);
+        //     Rho *= pow(0.5, 3);
+        // }
 
         Evaporate();
 

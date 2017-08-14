@@ -41,12 +41,12 @@ int From, To, Old_From, Value;
 
 int TSPLength = 0;
 
-double Alpha = 0.1;
-double Beta = 2;
-double Rho = 0.1;
-double Q0 = 0.85;
+double Alpha = 1;
+double Beta = 1;
+double Rho = 0.05;
+double Q0 = 0.9;
 double Tau = 0;
-double Phi = 0.1;
+double Phi = 0.02;
 
 int GetRandomInt();
 double GetRandomReal();
