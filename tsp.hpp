@@ -41,8 +41,8 @@ int From, To, Old_From, Value;
 
 int TSPLength = 0;
 
-double Alpha = 1;
-double Beta = 1;
+double Alpha = 0.5;
+double Beta = 5;
 double Rho = 0.05;
 double Q0 = 0.9;
 double Tau = 0;
