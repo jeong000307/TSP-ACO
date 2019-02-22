@@ -1,18 +1,11 @@
-_site
-.sass-cache
-.jekyll-metadata
-
-.ruby-version
-
-# Created by https://www.gitignore.io/api/macos
-
-### macOS ###
-*.DS_Store
+# General
+.DS_Store
 .AppleDouble
 .LSOverride
 
 # Icon must end with two \r
 Icon
+
 
 # Thumbnails
 ._*
@@ -33,12 +26,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-.vscode
-a.out
-*.log
-*.cls
-*.aux
-*.synctex.gz
-*.tex
-
 # End of https://www.gitignore.io/api/macos
+
+# Custom
+a.out
+.vscode
